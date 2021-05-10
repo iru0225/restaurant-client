@@ -1,0 +1,10 @@
+.item-card{
+    margin: .8rem 0;
+    border: 1px solid #122A4E;
+    border-radius: .3rem;
+   
+    .item-detail{
+        display: flex;
+        flex-direction: column;
+    }
+}
