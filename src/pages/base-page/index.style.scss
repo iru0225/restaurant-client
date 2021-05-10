@@ -3,4 +3,31 @@
     justify-content: space-around;
     margin: 70px auto 0 auto;
     width: 75%;
+
+    .button{
+        padding: 10px 10px 10px 10px;
+        border: 1px #122A4E solid;
+        border-radius: 5px;
+        background: #61DAFB;
+
+        &:hover{
+            cursor: pointer;
+            background: white;
+        }
+    }
+}
+
+.list-wrapper{
+    width: 75%;
+    height: 60vh;
+    margin: 4.5rem auto;
+    overflow: hidden;
+    overflow-y: auto;
+
+    .item-container{
+        cursor: pointer;
+        // &:hover{
+        //     cursor: pointer;
+        // }
+    }
 }
