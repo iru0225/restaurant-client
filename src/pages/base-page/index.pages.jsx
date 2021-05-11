@@ -7,8 +7,8 @@ import HeaderComponent from '../../components/header/header.component';
 import ItemCardComponent from '../../components/item-card/item-card.component'
 import InputComponent from '../../components/input/input.component';
 import SelectComponent from '../../components/select/select.component';
-
-
+import Modal from '../../components/modal/modal.component';
+import Cart from '../../components/cart/cart.component';
 
 const IndexPage = () => {
     const [hours, setHours] = useState([]);
@@ -21,43 +21,20 @@ const IndexPage = () => {
     const [amOPm, setamOPm] = useState(null);
     const [itemList, setItemList] = useState([]);
     const [offset, setOffset] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectItem, setSelectItem] = useState(null);
+    const [orderItem, setOrderItem] = useState([]);
 
     useEffect(() => {
-        setItemList([])
-    }, [date, hour, minute, amOPm])
-
-    useEffect(() => {
-        if (hour && minute && date && amOPm) {
-            let hours = null;
-            let minutes = minute;
-
-            if (amOPm.label === 'PM') {
-                if (hour.label === '00') {
-                    hours = hour.label;
-                }else if (hour.label === '12') {
-                    hours = '00';
-                    console.log(hours);
-                    return;
-                } else {
-                    hours = parseInt(hour.label) + 12;   
-                }
-            } else{
-                hours = hour.label;
-            }
-
-            let time = `${hours}:${minutes.label}:00`;
-
-            
-            axios({
-                method: 'GET',
-                url: `http://localhost:8080/api/restaurant/${day}.${time}.${offset}`
-            }).then((result) => {
-                setItemList(itemList.concat(result.data))
-            }).catch((err) => {
-                console.log(err);
-            })   
+        if (isOpen) {
+            return
         }
-    }, [offset])
+        setItemList([])
+        setSelectItem([])
+        setOrderItem([])
+        
+    }, [date, hour, minute, amOPm, isOpen])
 
     useEffect(() => {
         let hours = [];
@@ -96,21 +73,41 @@ const IndexPage = () => {
     }, [])
 
     const observer = useRef();
-    const lastElemet = useCallback(node => {
+    const lastElement = useCallback(node => {
+        if(loading) return;
+
         if (observer.current) {
             observer.current.disconnect();
         }
 
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                setOffset(itemList.length + 20);
+            if(entries[0].isIntersecting){
+                setOffset(itemList.length);
             }
         })
 
-        if(node){
-            observer.current.observe(node)
+        if (node) {
+            observer.current.observe(node);
         }
-    }, [offset])    
+    }, [itemList])
+
+    useEffect(() => {
+        if (hour && minute && amOPm) {
+            let time = moment(`${hour.label}:${minute.label} ${amOPm.label}`, 'hh:mm A').format('HH:mm:ss');
+
+            axios({
+                method: 'get',
+                url: `http://localhost:8080/api/restaurant/${day}.${time}.${offset}`
+            }).then(res => {
+                let ids = new Set(itemList.map(d => d.id));
+                setItemList(oldVal => {
+                    return [...oldVal, ...res.data.filter(d => !ids.has(d.id))]
+                });
+            }).catch(err => {
+                console.log(err);
+            })   
+        }
+    }, [offset]);    
 
     const checkDate = (val) => {
         let date = val;
@@ -121,33 +118,103 @@ const IndexPage = () => {
     }
 
     const searchData = () => {
-        let hours = null;
-        let minutes = minute;
-
-        if (amOPm.label === 'PM') {
-            if (hour.label === '00') {
-                hours = hour.label;
-            }else if (hour.label === '12') {
-                hours = '00';
-                console.log(hours);
-                return;
-            } else {
-                hours = parseInt(hour.label) + 12;   
-            }
-        } else{
-            hours = hour.label;
-        }
-
-        let time = `${hours}:${minutes.label}:00`;
+        setLoading(true);
+        let time = moment(`${hour.label}:${minute.label} ${amOPm.label}`, 'hh:mm A').format('HH:mm:ss');
 
         axios({
             method: 'GET',
             url: `http://localhost:8080/api/restaurant/${day}.${time}.0`
         }).then((result) => {
             setItemList(result.data);
+            setLoading(false);
         }).catch((err) => {
             console.log(err);
+            setLoading(true);
         })
+    }
+
+    const openModal = (e) => {
+        let id = e.currentTarget.getAttribute('data');
+        let data = itemList.filter(item => item.id === parseInt(id));
+
+        data = data.map(e => {
+            let temp = Object.assign({}, e)
+            temp.setOne = e.setOne.split(' - ');
+            temp.setTwo = e.setTwo.split(' - ');
+            temp.setThree = e.setThree.split(' - ');
+            temp.setFour = e.setFour.split(' - ');
+            temp.setFive = e.setFive.split(' - ');
+            return temp;
+        });
+    
+        setSelectItem(data[0]);
+        setIsOpen(true);
+    }
+
+    const addOrderItem = (e) => {
+        let restoid = e.getAttribute('restoid');
+        let menu = e.getAttribute('menu');
+        let price = e.getAttribute('price');
+        let currency = e.getAttribute('currency');
+        if (orderItem.length > 0) {
+            let duplicate = orderItem.find(item => {
+                return item.restoid === parseInt(restoid) && item.menu === menu;
+            })
+
+            if (duplicate) {
+                setOrderItem(orderItem.map(e => e.restoid === parseInt(restoid) && e.menu === menu ? {...duplicate, qty: duplicate.qty + 1} : e))
+                return;
+            }
+        }
+
+        let data = {
+            restoid: parseInt(restoid),
+            menu: menu,
+            price: parseInt(price),
+            currency: currency,
+            qty: 1
+        };
+
+        setOrderItem(oldData => {
+            return [...oldData, data]
+        });
+    }
+
+    const reduceCart = (e) => {
+        let restoid = e.getAttribute('restoid');
+        let menu = e.getAttribute('menu');
+        let price = e.getAttribute('price');
+        let currency = e.getAttribute('currency');
+        if (orderItem.length > 0) {
+            let duplicate = orderItem.find(item => {
+                return item.restoid === parseInt(restoid) && item.menu === menu;
+            })
+
+            if (duplicate) {
+                if (duplicate.qty === 1) {
+                    setOrderItem(orderItem.filter(e => e.restoid !== parseInt(restoid) && e.menu !== menu));
+                    return
+                }
+                setOrderItem(orderItem.map(e => e.restoid === parseInt(restoid) && e.menu === menu ? {...duplicate, qty: duplicate.qty - 1} : e))
+                return;
+            }
+        }
+
+        let data = {
+            restoid: parseInt(restoid),
+            menu: menu,
+            price: parseInt(price),
+            currency: currency,
+            qty: 1
+        };
+
+        setOrderItem(oldData => {
+            return [...oldData, data]
+        });
+    }
+
+    const processOrder = () => {
+        console.log(orderItem);
     }
 
     return(
@@ -185,13 +252,13 @@ const IndexPage = () => {
                         itemList.map((e, index) => {
                             if (itemList.length === index + 1) {
                                 return(
-                                    <div className="item-container" key={e.id} ref={lastElemet} data={e.id}>
+                                    <div className="item-container" key={e.id} ref={lastElement} data={e.id} onClick={openModal}>
                                         <ItemCardComponent item={e}/>
                                     </div>
                                 )
                             } else {
                                 return(
-                                    <div className="item-container" key={e.id} data={e.id}>
+                                    <div className="item-container" key={e.id} data={e.id} onClick={openModal}>
                                         <ItemCardComponent item={e}/>
                                     </div>
                                 )
@@ -199,6 +266,9 @@ const IndexPage = () => {
                         }) : null
                     }
                 </div>
+                <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+                    <Cart items={selectItem} cart={orderItem} addCart={addOrderItem} reduceCart={reduceCart} processOrder={processOrder}/>
+                </Modal>
             </div>
         </div>
     )

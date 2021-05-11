@@ -26,8 +26,6 @@
 
     .item-container{
         cursor: pointer;
-        // &:hover{
-        //     cursor: pointer;
-        // }
+        z-index: 999;
     }
 }
