@@ -4,6 +4,7 @@ import './item-card.style.scss';
 
 const ItemCardComponent = ({item}) => {
     return(
+        <>
         <div className="item-card">
             <div className="item-detail">
                 <span><h3>{item ? item.name : null}</h3></span>
@@ -17,6 +18,7 @@ const ItemCardComponent = ({item}) => {
                 <span>Open Hours: {item !== null ? moment(item.start_time.substring(0, 2), 'hh').format('LT') : null} ~ {item !== null? moment(item.end_time.substring(0,2), 'hh').format('LT') : null}</span>
             </div>
         </div>
+        </>
     )
 }
 
