@@ -32,10 +32,13 @@ const SelectComponent = ({optionList, selectLabel, parentCallback}) => {
                 </div>
                 <div className={`select-dropdown ${open ? 'open' : null}`}>
                     <div className="option-wrapper">
-                        {
-                            optionList.map(e => 
-                                <span className="option-list" key={e.id} data={e.id} onClick={selectedData}>{e.label}</span>
-                            )
+                        {   
+                            optionList.length > 0 && optionList !== null ?
+                                optionList.map(e => 
+                                    <span className="option-list" key={e.id} data={e.id} onClick={selectedData}>{e.label}</span>
+                                )
+                            :
+                                null
                         }
                     </div>
                 </div>
