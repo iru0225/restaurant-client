@@ -6,6 +6,26 @@
     position: relative;
 
     .form-group{
+        &.error{
+            input{
+                border: 1px solid #DA3D26;
+                border-radius: 3px;
+            }
+
+            input:focus~label,
+            input:valid~label {
+                top: -20px;
+                font-size: 14px;
+                color: #DA3D26;
+            }
+
+            input:focus~.bar:before,
+            input:focus~.bar:after {
+                width: 50%;
+                background: #DA3D26;
+            }
+        }
+
         input {
             font-size: 18px;
             padding: 10px 10px 10px 5px;
@@ -52,6 +72,29 @@
             position: relative;
             display: block;
             width: 100%;
+
+            &.error{
+                &::before,
+                &::after {
+                    content: '';
+                    height: 2px;
+                    width: 0;
+                    bottom: 1px;
+                    position: absolute;
+                    background: #DA3D26;
+                    transition: .2s ease all;
+                    -moz-transition: 0.2s ease all;
+                    -webkit-transition: 0.2s ease all;
+                }
+        
+                &::before {
+                    left: 50%;
+                }
+        
+                &::after {
+                    right: 50%;
+                }
+            }
             
             &::before,
             &::after {
