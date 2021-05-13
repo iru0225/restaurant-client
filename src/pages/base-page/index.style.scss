@@ -1,7 +1,7 @@
 .search{
     display: flex;
     justify-content: space-around;
-    margin: 70px auto 0 auto;
+    margin: 0 auto;
     width: 75%;
 
     .button{
@@ -20,12 +20,12 @@
 .list-wrapper{
     width: 75%;
     height: 60vh;
-    margin: 4.5rem auto;
+    margin: 2rem auto 0 auto;
     overflow: hidden;
     overflow-y: auto;
 
     .item-container{
         cursor: pointer;
-        z-index: 999;
+        z-index: 997;
     }
 }
