@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import './App.css';
 
 import HeaderComponent from './components/header/header.component.jsx';

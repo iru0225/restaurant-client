@@ -237,9 +237,11 @@ const IndexPage = ({user}) => {
     }
 
     const processOrder = () => {
+        let datetime = moment(`${date} ${hour.label}:${minute.label} ${amOPm.label}`, 'YYYY-MM-DD hh:mm A').format('YYYY-MM-DD HH:mm:ss');
         let order = {
             userId: user.id,
             total: orderItem.reduce((a, c) => a + (c.price * c.qty), 0),
+            order_date: datetime
         }
 
         let items = orderItem.map(({restoid: restaurantId, menu: item, ...e}) => ({restaurantId, item, ...e}));
@@ -270,7 +272,7 @@ const IndexPage = ({user}) => {
                         title: 'Success Create Order',
                         icon: 'success'
                     }).then(() => {
-                        // setIsOpen(false)
+                        setIsOpen(false)
                         setKey(Math.random())
                     })
                 }).catch(err => {

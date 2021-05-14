@@ -29,3 +29,21 @@
         z-index: 997;
     }
 }
+
+@media screen and (max-width: 812px){
+    .list-wrapper{
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 812px){
+    .search{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        div{
+            margin-bottom: 10px;
+        }
+    }
+}
