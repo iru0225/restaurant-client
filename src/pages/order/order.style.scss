@@ -1,0 +1,60 @@
+.detail-order{
+    .detail-order-id{
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid #122A4E;
+        padding: 0 0 10px 10px;
+        margin-bottom: 20px;
+
+        span{
+            &:first-child{
+                font-weight: 500;
+            }
+        }
+
+        .booking-detail{
+            display:  flex;
+            justify-content: space-between;
+            
+            span{
+                font-weight: normal;
+            }
+        }
+    }
+
+    .detail-order-item{
+        padding: 0 10px 10px 10px;
+        .detail-items-header{
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            font-weight: 500;
+            span{
+                text-align: right;
+                
+                &:first-child{
+                    text-align: center;
+                }
+            }
+        }
+        
+        .detail-items{
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+
+            span{
+                padding: 1.5rem 0;
+                text-align: right;
+                border-bottom: 1px solid rgba($color: #757575, $alpha: .7);
+                
+                &:first-child{
+                    text-align: start;
+                }
+            }
+        }
+    }
+
+    .total-price{
+        display: flex;
+        justify-content: flex-end;
+    }
+}

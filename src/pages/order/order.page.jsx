@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import './order.style.scss';
 
 import OrderCard from '../../components/order-card/order-card.component';
@@ -77,22 +78,30 @@ const OrderPage = ({user}) => {
                     <div className="detail-order">
                         <div className="detail-order-id">
                             <span>Orde Id: {selectOrder.id}</span>
-                            <span>Restaurant: {selectOrder.orderitems[0].restaurant.name}</span>
+                            <div className="booking-detail">
+                                <span>Restaurant: {selectOrder.orderitems[0].restaurant.name}</span>
+                                <span>Booking Date: {moment(selectOrder.order_date).format('DD MMMM YYYY hh:mm A')}</span>
+                            </div>
                         </div>
-                        <div className="detail order item">
+                        <div className="detail-order-item">
+                            <div className="detail-items-header">
+                                <span>Menu</span>
+                                <span>Price & Qty</span>
+                                <span>Sub Total</span>
+                            </div>
                             {
                                 selectOrder.orderitems.map(e => {
                                     return(
-                                        <div>
+                                        <div key={`${Math.random()}${selectOrder.id}`} className="detail-items">
                                             <span>{e.item}</span>
-                                            <span>{e.qty} x {e.currency}{e.price}</span>
-                                            <span>{e.subtotal}</span>
+                                            <span>{e.qty} x {e.currency} {e.price}</span>
+                                            <span>{e.currency} {e.subtotal}</span>
                                         </div>
                                     )
                                 })
                             }
-                            <div>
-                                <h4>{selectOrder.total}</h4>
+                            <div className="total-price">
+                                <h4>Total: {selectOrder.orderitems[0].currency} {selectOrder.total}</h4>
                             </div>
                         </div>
                     </div>
