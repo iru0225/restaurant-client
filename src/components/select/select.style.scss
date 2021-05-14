@@ -9,7 +9,7 @@
         input {
             font-size: 18px;
             padding: 10px 10px 15px 5px;
-            width: auto;
+            width: 100%;
             display: block;
             border: none;
             border-bottom: 1px solid #757575;
@@ -81,6 +81,7 @@
         background: white;
         position: absolute;
         width: 100%;
+        z-index: 999;
         
         &.open{
             display: block;
